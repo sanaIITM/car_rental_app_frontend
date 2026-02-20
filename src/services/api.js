@@ -7,14 +7,14 @@ const api = axios.create({
   }
 });
 
-// 🔐 Attach token automatically
+// 🔐 Attach token automatically (FIXED)
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
-    if (token) {
+    if (userInfo?.token) {
       config.headers = config.headers || {};
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers.Authorization = `Bearer ${userInfo.token}`;
     }
 
     return config;
@@ -27,7 +27,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      localStorage.clear();
+      localStorage.removeItem("userInfo");
       window.location.href = "/login";
     }
 
